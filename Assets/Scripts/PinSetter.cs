@@ -5,6 +5,19 @@ using UnityEngine.UI;
 
 public class PinSetter : MonoBehaviour
 {
+    // ===================================================================
+    // Variables
+    // ===================================================================
+
+    public Text pinCounter;
+
+    private bool ballEnteredBox;
+
+
+    // ===================================================================
+    // Methods
+    // ===================================================================
+
     public int CountStanding()
     {
         int standingPins = 0;
@@ -21,5 +34,38 @@ public class PinSetter : MonoBehaviour
     private void Start()
     {
 
+    }
+
+    private void Update()
+    {
+        if (this.ballEnteredBox)
+        {
+            this.pinCounter.color = Color.red;
+            this.pinCounter.text = this.CountStanding().ToString();
+        }
+        else
+        {
+            this.pinCounter.color = Color.black;
+        }        
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    { 
+        if (collision.GetComponent<Ball>())
+        {            
+            this.ballEnteredBox = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider collision)
+    {
+        if (collision.GetComponent<Ball>())
+        {            
+            this.ballEnteredBox = false;
+        }
+        else if (collision.GetComponent<Pin>())
+        {
+            Destroy(collision.gameObject);
+        }
     }
 }

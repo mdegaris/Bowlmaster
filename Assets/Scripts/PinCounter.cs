@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class PinCounter : MonoBehaviour
 {
+    /*
     private Text counterText;
     private PinSetter pinSetter;
      
@@ -19,4 +20,5 @@ public class PinCounter : MonoBehaviour
         this.counterText = GetComponent<Text>();
         this.pinSetter = FindObjectOfType<PinSetter>();
     }
+    */
 }
