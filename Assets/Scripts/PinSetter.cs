@@ -9,9 +9,14 @@ public class PinSetter : MonoBehaviour
     // Variables
     // ===================================================================
 
-    public Text pinCounter;
+    private static float settleTime = 3f;
 
-    private bool ballEnteredBox;
+    public int lastStandingCount = -1;
+    public Text pinsStanding;
+
+    private Ball ball;
+    private float lastChangedTime;
+    private bool ballEnteredBox = false;
 
 
     // ===================================================================
@@ -33,39 +38,67 @@ public class PinSetter : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
-
+        this.ball = GameObject.FindObjectOfType<Ball>();
     }
 
     private void Update()
     {
         if (this.ballEnteredBox)
         {
-            this.pinCounter.color = Color.red;
-            this.pinCounter.text = this.CountStanding().ToString();
-        }
-        else
+            this.pinsStanding.color = Color.red;
+            this.pinsStanding.text = this.CountStanding().ToString();
+
+            CheckStanding();
+        }      
+    }
+
+    private void CheckStanding()
+    {
+        // Update lastStandingCount
+        int currentStandingCount = this.CountStanding();
+        float currentTime = Time.realtimeSinceStartup;
+
+        // Call PinsHaveSettled() when they have
+        if ((this.lastStandingCount == -1) || (this.lastStandingCount != currentStandingCount))
         {
-            this.pinCounter.color = Color.black;
+            this.lastStandingCount = currentStandingCount;
+            this.lastChangedTime = currentTime;
+        }
+        else if ((currentTime - this.lastChangedTime) > PinSetter.settleTime)
+        {
+            this.PinsHaveSettled();
         }        
     }
 
+    private void PinsHaveSettled()
+    {
+        Debug.Log("Pins have settled.");
+
+        ball.Reset();
+        this.lastStandingCount = -1;
+        this.ballEnteredBox = false;
+        this.pinsStanding.color = Color.green;
+    }
+
     private void OnTriggerEnter(Collider collision)
-    { 
-        if (collision.GetComponent<Ball>())
+    {
+        GameObject enteredObj = collision.gameObject;
+        if (enteredObj.GetComponent<Ball>())
         {            
             this.ballEnteredBox = true;
+            Debug.Log("Ball entered pin setter.");
         }
     }
 
     private void OnTriggerExit(Collider collision)
     {
-        if (collision.GetComponent<Ball>())
-        {            
-            this.ballEnteredBox = false;
-        }
-        else if (collision.GetComponent<Pin>())
+        GameObject exitedObj = collision.gameObject;
+        if (exitedObj.GetComponent<Pin>())
         {
-            Destroy(collision.gameObject);
+            Destroy(exitedObj.GetComponent<Pin>().gameObject);
+            Debug.Log("Destroy " + exitedObj);
         }
     }
+
+
 }

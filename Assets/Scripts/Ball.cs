@@ -48,6 +48,11 @@ public class Ball : MonoBehaviour
         return this.launched;
     }
 
+    public void Reset()
+    {
+        Debug.Log("Reset the ball.");
+    }
+
     // Use this for initialization
     private void Start()
     {
