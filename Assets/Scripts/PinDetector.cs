@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PinSetter : MonoBehaviour
+public class PinDetector : MonoBehaviour
 {
     // ===================================================================
     // Variables
     // ===================================================================
 
-    private static float settleTime = 3f;
+    private static float settleTimeInSecs = 3f;
 
     public int lastStandingCount = -1;
     public Text pinsStanding;
@@ -17,7 +17,7 @@ public class PinSetter : MonoBehaviour
     private Ball ball;
     private float lastChangedTime;
     private bool ballEnteredBox = false;
-
+  
 
     // ===================================================================
     // Methods
@@ -64,7 +64,7 @@ public class PinSetter : MonoBehaviour
             this.lastStandingCount = currentStandingCount;
             this.lastChangedTime = currentTime;
         }
-        else if ((currentTime - this.lastChangedTime) > PinSetter.settleTime)
+        else if ((currentTime - this.lastChangedTime) > PinDetector.settleTimeInSecs)
         {
             this.PinsHaveSettled();
         }        
@@ -73,11 +73,12 @@ public class PinSetter : MonoBehaviour
     private void PinsHaveSettled()
     {
         Debug.Log("Pins have settled.");
-
-        ball.Reset();
+        
         this.lastStandingCount = -1;
         this.ballEnteredBox = false;
         this.pinsStanding.color = Color.green;
+
+        ball.Reset();
     }
 
     private void OnTriggerEnter(Collider collision)

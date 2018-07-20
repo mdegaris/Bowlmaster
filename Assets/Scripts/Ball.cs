@@ -8,9 +8,10 @@ public class Ball : MonoBehaviour
     // Variables
     // ===================================================================
 
-    public static float xNudgeMax = 45f;
-    public static float xNudgeMin = -45f;
-    
+    private static float xNudgeMax = 45f;
+    private static float xNudgeMin = -45f;
+
+    private Vector3 startingPosition;
     private Rigidbody ballRigidbody;
     private AudioSource ballAudio;
     private bool launched = false;
@@ -51,6 +52,14 @@ public class Ball : MonoBehaviour
     public void Reset()
     {
         Debug.Log("Reset the ball.");
+
+        // Rigidbody reset
+        this.ballRigidbody.useGravity = false;
+        this.ballRigidbody.angularVelocity = Vector3.zero;
+        this.ballRigidbody.velocity = Vector3.zero;
+
+        this.transform.position = this.startingPosition;
+        this.launched = false;
     }
 
     // Use this for initialization
@@ -59,7 +68,10 @@ public class Ball : MonoBehaviour
         this.ballRigidbody = GetComponent<Rigidbody>();
         this.ballAudio = GetComponent<AudioSource>();
 
-        // We want the ball staying still until its launched.
-        this.ballRigidbody.useGravity = false;
+        // Capture starting position
+        this.startingPosition = this.transform.position;
+
+        // Apply reset logic
+        this.Reset();        
     }
 }
