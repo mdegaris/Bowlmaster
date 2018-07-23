@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Ball))]
-public class DragLaunch : MonoBehaviour
+public class BallDragLaunch : MonoBehaviour
 {
     // ===================================================================
     // Variables
@@ -49,7 +49,7 @@ public class DragLaunch : MonoBehaviour
             float launchSpeedX = ((dragEndPos.x - this.dragStartPos.x) / dragDuration);
             float launchSpeedY = ((dragEndPos.y - this.dragStartPos.y) / dragDuration);
 
-            if ((launchSpeedX > DragLaunch.minimumMovement) || (launchSpeedY > DragLaunch.minimumMovement))
+            if ((launchSpeedX > BallDragLaunch.minimumMovement) || (launchSpeedY > BallDragLaunch.minimumMovement))
             {
                 // Translate the 2D mouse swipe into a 3D vector, i.e. (3D) z = (2D) y;
                 Vector3 launchVelocity = new Vector3(launchSpeedX, 0, launchSpeedY);

@@ -9,7 +9,7 @@ public class PinDetector : MonoBehaviour
     // Variables
     // ===================================================================
 
-    private static float settleTimeInSecs = 3f;
+    private static float settleTimeInSecs = 5f;
 
     public int lastStandingCount = -1;
     public Text pinsStanding;
@@ -48,17 +48,20 @@ public class PinDetector : MonoBehaviour
             this.pinsStanding.color = Color.red;
             this.pinsStanding.text = this.CountStanding().ToString();
 
-            CheckStanding();
+            if (CheckIfPinsSettled())
+            {
+                this.EndRoll();
+            }
         }      
     }
 
-    private void CheckStanding()
+    private bool CheckIfPinsSettled()
     {
         // Update lastStandingCount
         int currentStandingCount = this.CountStanding();
         float currentTime = Time.realtimeSinceStartup;
 
-        // Call PinsHaveSettled() when they have
+        // Check if the pins have settled, i.e. the standing count hasn't changed for settleTimeInSecs
         if ((this.lastStandingCount == -1) || (this.lastStandingCount != currentStandingCount))
         {
             this.lastStandingCount = currentStandingCount;
@@ -66,13 +69,15 @@ public class PinDetector : MonoBehaviour
         }
         else if ((currentTime - this.lastChangedTime) > PinDetector.settleTimeInSecs)
         {
-            this.PinsHaveSettled();
-        }        
+            return true;            
+        }
+
+        return false;
     }
 
-    private void PinsHaveSettled()
+    private void EndRoll()
     {
-        Debug.Log("Pins have settled.");
+        Debug.Log("Pins have settled so end turn and reset.");
         
         this.lastStandingCount = -1;
         this.ballEnteredBox = false;

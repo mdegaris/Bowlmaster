@@ -9,6 +9,9 @@ public class Pin : MonoBehaviour
     // ===================================================================
 
     public float standingThreshold;
+    public float distanceToRaise;
+
+    private Rigidbody pinRigidbody;
 
 
     // ===================================================================
@@ -20,9 +23,28 @@ public class Pin : MonoBehaviour
         return (transform.forward.y > standingThreshold);
     }
 
-    private void Update()
+    public void RaiseIfStanding()
     {
-        // this.IsStanding();
+        if (this.IsStanding())
+        {
+            this.pinRigidbody.useGravity = false;
+            this.pinRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+            this.transform.Translate(new Vector3(0, this.distanceToRaise, 0), Space.World);
+            this.transform.rotation = Quaternion.Euler(270, 0, 0);
+        }
+    }
+
+    public void Lower()
+    {
+        this.transform.Translate(new Vector3(0, 0, -this.distanceToRaise));
+        this.pinRigidbody.constraints = RigidbodyConstraints.None;
+        this.GetComponent<Rigidbody>().useGravity = true;        
+    }
+
+
+    private void Start()
+    {
+        this.pinRigidbody = GetComponent<Rigidbody>();
     }
 }
 
