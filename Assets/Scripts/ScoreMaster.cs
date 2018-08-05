@@ -1,74 +1,19 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 
-public class ScoreMaster : MonoBehaviour
+public class ScoreMaster
 {
-    /*
-    static private int lastFrame = 10;
-
-    // ===================================================================
-    // Variables
-    // ===================================================================
-
-    private int[][] scoreCard;
-    private int currentFrame;
-
-    // ===================================================================
-    // Methods
-    // ===================================================================
-
-
-    
-    public Action Roll(int pins)
+    public static List<int> ScoreFrames(List<int> bowls)
     {
-        int currentFrameRolls = scoreCard[currentFrame].Length;
+        List<int> frameList = new List<int>();
 
-        if (currentFrameRolls == 0 || currentFrameRolls == 1 || (currentFrameRolls == 2 && this.IsLastFrame(currentFrame)))
+        for (int bi = 0; bi < bowls.Count; bi++)
         {
 
         }
 
-        switch (currentFrameRolls)
-        {
-            case 0:
-            case 1:
-                scoreCard[this.currentFrame][currentFrameRolls] = pins;
-                break;            
-        }
-
-        if (currentFrameRolls == 2)
-        {
-            
-        }
-
-
-        return Action.Tidy;
+        return frameList;
     }
-
-    public bool IsFrameOver(int frame)
-    {
-        return false;
-    }
-
-
-
-    private bool IsStrike(int frame)
-    {
-        return false;
-    }
-
-    private bool IsSpare(int frame)
-    {
-        return false;
-    }
-
-    private bool IsLastFrame(int frame)
-    {
-        return (frame == ScoreMaster.lastFrame);
-    }
-
-
-    */
 }

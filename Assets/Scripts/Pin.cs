@@ -27,6 +27,7 @@ public class Pin : MonoBehaviour
     {
         if (this.IsStanding())
         {
+            // Ensure the pins are in an upright position.
             this.pinRigidbody.useGravity = false;
             this.pinRigidbody.constraints = RigidbodyConstraints.FreezeAll;
             this.transform.Translate(new Vector3(0, this.distanceToRaise, 0), Space.World);
@@ -36,6 +37,7 @@ public class Pin : MonoBehaviour
 
     public void Lower()
     {
+        // Lower and reset after ensuring uprightness when raising pins.
         this.transform.Translate(new Vector3(0, 0, -this.distanceToRaise));
         this.pinRigidbody.constraints = RigidbodyConstraints.None;
         this.GetComponent<Rigidbody>().useGravity = true;        

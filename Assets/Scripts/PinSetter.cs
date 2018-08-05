@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PinDetector : MonoBehaviour
+public class PinSetter : MonoBehaviour
 {
     // ===================================================================
     // Variables
@@ -11,17 +11,26 @@ public class PinDetector : MonoBehaviour
 
     private static float settleTimeInSecs = 5f;
 
-    public int lastStandingCount = -1;
     public Text pinsStanding;
 
+    private int lastStandingCount = -1;
+    private ActionMaster actionMaster;
+    private PinAnimator pinAnimator;
     private Ball ball;
     private float lastChangedTime;
-    private bool ballEnteredBox = false;
-  
+    private int pinsStandingOnBowlStart;
+    private bool ballOutOfPlay = false;
+    
+
 
     // ===================================================================
     // Methods
     // ===================================================================
+
+    public void StartBowl()
+    {
+        this.pinsStandingOnBowlStart = this.CountStanding();
+    }
 
     public int CountStanding()
     {
@@ -35,18 +44,30 @@ public class PinDetector : MonoBehaviour
         return standingPins;
     }
 
+    public void UpdatePinStanding(int standingCount, Color color)
+    {
+        this.pinsStanding.text = standingCount.ToString();
+        this.pinsStanding.color = color;
+    }
+
+    public void BallFellInGutter()
+    {
+        this.ballOutOfPlay = true;
+    }
+
     // Use this for initialization
     private void Start()
     {
+        actionMaster = new ActionMaster();
+        this.pinAnimator = GameObject.FindObjectOfType<PinAnimator>();
         this.ball = GameObject.FindObjectOfType<Ball>();
     }
 
     private void Update()
     {
-        if (this.ballEnteredBox)
+        if (this.ballOutOfPlay)
         {
-            this.pinsStanding.color = Color.red;
-            this.pinsStanding.text = this.CountStanding().ToString();
+            this.UpdatePinStanding(this.CountStanding(), Color.red);
 
             if (CheckIfPinsSettled())
             {
@@ -67,31 +88,32 @@ public class PinDetector : MonoBehaviour
             this.lastStandingCount = currentStandingCount;
             this.lastChangedTime = currentTime;
         }
-        else if ((currentTime - this.lastChangedTime) > PinDetector.settleTimeInSecs)
+        else if ((currentTime - this.lastChangedTime) > PinSetter.settleTimeInSecs)
         {
-            return true;            
+            return true;
         }
 
         return false;
     }
 
     private void EndRoll()
-    {
-        Debug.Log("Pins have settled so end turn and reset.");
-        
+    {        
         this.lastStandingCount = -1;
-        this.ballEnteredBox = false;
+        this.ballOutOfPlay = false;
         this.pinsStanding.color = Color.green;
-
         ball.Reset();
+
+        int fallenCount = this.pinsStandingOnBowlStart - this.CountStanding();
+        //ActionMaster.Action action = ActionMaster.NextAction(fallenCount);        
+        //this.pinAnimator.DoAction(action);
     }
 
     private void OnTriggerEnter(Collider collision)
-    {
+    {        
         GameObject enteredObj = collision.gameObject;
         if (enteredObj.GetComponent<Ball>())
         {            
-            this.ballEnteredBox = true;
+            this.ballOutOfPlay = true;
             Debug.Log("Ball entered pin setter.");
         }
     }

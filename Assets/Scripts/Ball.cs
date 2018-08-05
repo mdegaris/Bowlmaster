@@ -11,6 +11,7 @@ public class Ball : MonoBehaviour
     private static float xNudgeMax = 45f;
     private static float xNudgeMin = -45f;
 
+    private PinSetter pinSetter;
     private Vector3 startingPosition;
     private Rigidbody ballRigidbody;
     private AudioSource ballAudio;
@@ -24,6 +25,8 @@ public class Ball : MonoBehaviour
     // Performs the ball launching steps.
     public void Launch(Vector3 velocity)
     {
+        this.pinSetter.StartBowl();
+
         this.launched = true;
         this.ballRigidbody.useGravity = true;
         this.ballRigidbody.velocity = velocity;
@@ -65,6 +68,7 @@ public class Ball : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
+        this.pinSetter = GameObject.FindObjectOfType<PinSetter>();
         this.ballRigidbody = GetComponent<Rigidbody>();
         this.ballAudio = GetComponent<AudioSource>();
 

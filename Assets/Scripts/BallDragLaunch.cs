@@ -24,10 +24,10 @@ public class BallDragLaunch : MonoBehaviour
     // Capture the time and position of a drag start.
     public void DragStart()
     {
-        Debug.Log("Start dragging.");
-
         if (! this.ball.InPlay())
         {
+            Debug.Log("Start dragging.");
+
             this.dragStartPos = Input.mousePosition;
             this.dragStartTime = Time.realtimeSinceStartup;
             this.isDragging = true;
@@ -36,17 +36,20 @@ public class BallDragLaunch : MonoBehaviour
 
     // Launch the ball when the dragging has ended.
     public void DragEnd()
-    {
-        Debug.Log("Stop dragging.");
-
+    {        
         if (this.isDragging)
         {
+            Debug.Log("Stop dragging.");
+
             Vector2 dragEndPos = Input.mousePosition;
             float dragEndTime = Time.realtimeSinceStartup;
 
-            float dragDuration = Time.realtimeSinceStartup - this.dragStartTime;
+            float dragDuration = (Time.realtimeSinceStartup - this.dragStartTime);
 
+            // Debug Testing
             float launchSpeedX = ((dragEndPos.x - this.dragStartPos.x) / dragDuration);
+            launchSpeedX = launchSpeedX / 1.5f;
+            // float launchSpeedX = 0;
             float launchSpeedY = ((dragEndPos.y - this.dragStartPos.y) / dragDuration);
 
             if ((launchSpeedX > BallDragLaunch.minimumMovement) || (launchSpeedY > BallDragLaunch.minimumMovement))
