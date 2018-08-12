@@ -25,14 +25,16 @@ public class Pin : MonoBehaviour
 
     public void RaiseIfStanding()
     {
-        if (this.IsStanding())
-        {
-            // Ensure the pins are in an upright position.
-            this.pinRigidbody.useGravity = false;
-            this.pinRigidbody.constraints = RigidbodyConstraints.FreezeAll;
-            this.transform.Translate(new Vector3(0, this.distanceToRaise, 0), Space.World);
-            this.transform.rotation = Quaternion.Euler(270, 0, 0);
-        }
+        if (this.IsStanding()) { this.Raise(); }
+    }
+
+    public void Raise()
+    {
+        // Ensure the pins are in an upright position.
+        this.pinRigidbody.useGravity = false;
+        this.pinRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        this.transform.Translate(new Vector3(0, this.distanceToRaise, 0), Space.World);
+        this.transform.rotation = Quaternion.Euler(270, 0, 0);
     }
 
     public void Lower()

@@ -24,7 +24,7 @@ public class BallDragLaunch : MonoBehaviour
     // Capture the time and position of a drag start.
     public void DragStart()
     {
-        if (! this.ball.InPlay())
+        if (! this.ball.Launched())
         {
             Debug.Log("Start dragging.");
 
@@ -56,8 +56,6 @@ public class BallDragLaunch : MonoBehaviour
             {
                 // Translate the 2D mouse swipe into a 3D vector, i.e. (3D) z = (2D) y;
                 Vector3 launchVelocity = new Vector3(launchSpeedX, 0, launchSpeedY);
-
-                Debug.Log(string.Format("launchVelocity: {0}", launchVelocity));
                 this.ball.Launch(launchVelocity);
             }
 
