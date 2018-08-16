@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class ScoreMaster
 {
-    private enum BowlType { Normal, Spare, Strike };
+    private enum Bonus { None, Spare, Strike };
 
     public static List<int> ScoreCumulative(List<int> bowls)
     {
@@ -23,10 +23,15 @@ public class ScoreMaster
 
     public static List<int> ScoreFrames(List<int> bowls)
     {
+        //   0   1   2  3
+        // { 10, 10, 2, 3 };
+        // { 22, 15, 5 };
         List<int> frameList = new List<int>();
 
-        int frameScore = 0;        
-        int nextTallyBowl = 1;
+        int tally = 0;
+        int tallyStart = 0;
+        int tallyEnd = 1;
+        Queue<Bonus> bonusQueue= new Queue<Bonus>();
         for (int bi = 0; bi < bowls.Count; bi++)
         {
             int pins = bowls[bi];
@@ -34,30 +39,48 @@ public class ScoreMaster
             // Strike
             if (pins == 10)
             {
-                nextTallyBowl = bi + 2;
+                tallyEnd++;
+                bonusQueue.Enqueue(Bonus.Strike);
             }
             // Spare
             else if ((bi % 2 != 0) && (bowls[bi] + bowls[bi-1] == 10))
             {
-                nextTallyBowl = bi + 1;
+                tallyEnd++;
+                bonusQueue.Enqueue(Bonus.Spare);
             }
 
-            frameScore += pins;
-            if (nextTallyBowl == bi)
+            if (tallyEnd == bi)
             {
-                frameList.Add(frameScore);
-                frameScore = 0;
-                nextTallyBowl += (bi % 2 == 0) ? 1 : 2;
-            }
-            else
-            {
+                for (int ti = tallyStart; ti <= tallyEnd; ti++)
+                {
+                    tally += bowls[ti];
+                }
+
+                frameList.Add(tally);
+
+                Bonus currentBonus = Bonus.None;
+                if (bonusQueue.Count > 0)
+                {
+                    currentBonus = bonusQueue.Dequeue();
+                }
+
+                if (currentBonus == Bonus.Spare)
+                {
+                    tallyStart = bi;
+                }
+                else if (currentBonus == Bonus.Strike)
+                {
+                    tallyStart = --bi;
+                }
+                else
+                {
+                    tallyStart = (bi + 1);
+                }
+                
+                tallyEnd = (tallyStart + 1);
+                tally = 0;
 
             }
-            /*
-            else
-            {
-                tallyCountdown = tallyCountdown > 0 ? tallyCountdown -= 1 : tallyCountdown;
-            }*/
         }
 
         return frameList;
