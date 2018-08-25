@@ -9,7 +9,8 @@ public class BallDragLaunch : MonoBehaviour
     // Variables
     // ===================================================================
 
-    private static float minimumMovement = 100;
+    private const float MinimumMovement = 100;
+    private const float XFudgeFactor = 4;
 
     private Ball ball;
     private Vector2 dragStartPos;
@@ -48,11 +49,11 @@ public class BallDragLaunch : MonoBehaviour
 
             // Debug Testing
             float launchSpeedX = ((dragEndPos.x - this.dragStartPos.x) / dragDuration);
-            launchSpeedX = launchSpeedX / 1.5f;
+            launchSpeedX = launchSpeedX / XFudgeFactor;
             // float launchSpeedX = 0;
             float launchSpeedY = ((dragEndPos.y - this.dragStartPos.y) / dragDuration);
 
-            if ((launchSpeedX > BallDragLaunch.minimumMovement) || (launchSpeedY > BallDragLaunch.minimumMovement))
+            if ((launchSpeedX > BallDragLaunch.MinimumMovement) || (launchSpeedY > BallDragLaunch.MinimumMovement))
             {
                 // Translate the 2D mouse swipe into a 3D vector, i.e. (3D) z = (2D) y;
                 Vector3 launchVelocity = new Vector3(launchSpeedX, 0, launchSpeedY);

@@ -14,7 +14,6 @@ public class PinSetter : MonoBehaviour
 
     public GameObject pinSet;
 
-    private GameManager gameManager;
     private Animator animator;
     private PinCounter pinCounter;
 
@@ -65,7 +64,7 @@ public class PinSetter : MonoBehaviour
             case ActionMaster.Action.Reset:
             case ActionMaster.Action.EndTurn:
                 this.Reset();
-                this.pinCounter.Reset();
+                this.pinCounter.Reset(endTurn: true);
                 break;
         }
     }
@@ -103,7 +102,6 @@ public class PinSetter : MonoBehaviour
     private void Start()
     {
         this.animator = GetComponent<Animator>();
-        this.gameManager = GameObject.FindObjectOfType<GameManager>();
         this.pinCounter = GameObject.FindObjectOfType<PinCounter>();
     }
 }

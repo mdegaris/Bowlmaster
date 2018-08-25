@@ -1,138 +1,102 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class ActionMaster
-{
-    public enum Action {Tidy, Reset, EndTurn, EndGame, Undefined};
-    private static int maxBowls = 21;
+public static class ActionMaster {
+	public enum Action {Tidy, Reset, EndTurn, EndGame, Undefined};
 
-    private int currentBowl = 1, currentFrame = 1;
-    private int[] bowls = new int[ActionMaster.maxBowls];
-            
 
-    public static Action NextAction(List<int> pinFalls)
+    public static Action NextAction(List<int> rolls)
     {
-        ActionMaster actionMaster = new ActionMaster();
+        Action nextAction = Action.Undefined;
 
-        Action currentAction = Action.Undefined;
-        foreach (int pinFall in pinFalls)
-        {
-            currentAction = actionMaster.Bowl(pinFall);
-        }
+        // Create a copy so we don't polute the passed-in list when inserting values.
+        List<int> rollsClone = new List<int>(rolls);
+        for (int i = 0; i < rollsClone.Count; i++)
+        { // Step through rolls
 
-        return currentAction;
-    }   
-
-    private Action Bowl(int pins)
-    {        
-        // Defensive checks.
-        if ((pins < 0) || (pins > 10)) {throw new UnityException("Invalid number of pins: " + pins);}
-        if ((currentBowl < 1) || (currentBowl > ActionMaster.maxBowls))
-        {
-            throw new UnityException("Invalid number of bowls: " + currentBowl);
-        }
-
-        this.bowls[currentBowl - 1] = pins;
-
-        // Last frame conditions
-        if (currentBowl >= 19)
-        {
-            Debug.Log("Last frame detected.");
-
-            Action lastFrameAction = Action.Undefined;
-
-            // If end of game then EndGame immediatley.
-            if (this.CheckEndGameCondition()) { return Action.EndGame; }
-
-            // 20th bowl special condition: When 19th with a strike, but 20th was not, do a tidy.
-            else if ((this.currentBowl == 20) && (this.bowls[18] == 10) && (this.bowls[19] < 10))
+            if (i == 20)
             {
-                lastFrameAction = Action.Tidy;
+                nextAction = Action.EndGame;
             }
-            // Strike
-            else if (pins == 10)
-            {
-                lastFrameAction = Action.Reset;
-            }            
-            // Spare
-            else if (this.FrameIsSpare())
-            {
-                lastFrameAction = Action.Reset;
+            else if (i >= 18 && rollsClone[i] == 10)
+            { // Handle last-frame special cases
+                nextAction = Action.Reset;
             }
-            // Non-special bowl
+            else if (i == 19)
+            {
+                if (rollsClone[18] == 10 && rollsClone[19] == 0)
+                {
+                    nextAction = Action.Tidy;
+                }
+                else if (rollsClone[18] + rollsClone[19] == 10)
+                {
+                    nextAction = Action.Reset;
+                }
+                else if (rollsClone[18] + rollsClone[19] >= 10)
+                {  // Roll 21 awarded
+                    nextAction = Action.Tidy;
+                }
+                else
+                {
+                    nextAction = Action.EndGame;
+                }
+            }
+            else if (i % 2 == 0)
+            { // First bowl of frame
+                if (rollsClone[i] == 10)
+                {
+                    rollsClone.Insert(i, 0); // Insert virtual 0 after strike
+                    nextAction = Action.EndTurn;
+                }
+                else
+                {
+                    nextAction = Action.Tidy;
+                }
+            }
             else
-            {
-                lastFrameAction = Action.Tidy;
-            }
-                        
-            this.currentBowl++;
-            return lastFrameAction;
-        }
-        else
-        {
-            // Strike
-            if (((currentBowl % 2) != 0) && (pins == 10))
-            {
-                this.currentFrame++;
-                this.currentBowl += 2;
-                return Action.EndTurn;
-            }
-            // Last bowl of frame.
-            else if ((this.FrameIsSpare()  || (currentBowl % 2) == 0))
-            {
-                this.currentFrame++;
-                this.currentBowl++;
-                return Action.EndTurn;
-            }
-            else if ((currentBowl % 2) != 0)
-            {
-                this.currentBowl++;
-                return Action.Tidy;
+            { // Second bowl of frame
+                nextAction = Action.EndTurn;
             }
         }
 
-        // Other behaviour.
-        throw new UnityException("Don't know what to return.");
+        return nextAction;
     }
 
-    private bool FrameIsSpare()
-    {
-        int frameStartIndex = (this.currentFrame * 2) - 2;
 
-        int frameBowl1 = this.bowls[frameStartIndex];
-        int frameBowl2 = this.bowls[frameStartIndex + 1];
-        int pinsTotal = (frameBowl1 + frameBowl2);
-        return ((pinsTotal == 10) && (frameBowl1 < 10));
-    }
-
-    private bool Award21stBowl()
-    {
-        // Can only determine on at least 20th bowl
-        if (this.currentBowl >= 20)
-        {
-            return ((bowls[18] + bowls[19]) >= 10);
-        }
-        else
-        {
-            return false;
-        }         
-    }
-
-    private bool CheckEndGameCondition()
-    {
-        // Check if 21st bowl.
-        if (this.currentBowl == ActionMaster.maxBowls)
-        {
-            return true;
-        }
-
-        // Check if 20th bowl and not allowed 21st.
-        if ((! this.Award21stBowl()) && (this.currentBowl == 20))
-        { 
-            return true;
-        }
-        
-        return false;
-    }
+    /*
+	public static Action NextAction (List<int> rolls) {
+		Action nextAction = Action.Undefined;
+		
+		for (int i = 0; i < rolls.Count; i++) { // Step through rolls
+			
+			if (i == 20) {
+				nextAction = Action.EndGame;
+			} else if ( i >= 18 && rolls[i] == 10 ){ // Handle last-frame special cases
+				nextAction = Action.Reset;
+			} else if ( i == 19 ) {
+				if (rolls[18]==10 && rolls[19]==0) {
+					nextAction = Action.Tidy;
+				} else if (rolls[18] + rolls[19] == 10) {
+					nextAction = Action.Reset;
+				} else if (rolls [18] + rolls[19] >= 10) {  // Roll 21 awarded
+					nextAction = Action.Tidy;
+				} else {
+					nextAction = Action.EndGame;
+				}
+			} else if (i % 2 == 0) { // First bowl of frame
+				if (rolls[i] == 10) {
+					rolls.Insert (i, 0); // Insert virtual 0 after strike
+					nextAction = Action.EndTurn;
+				} else {
+					nextAction = Action.Tidy;
+				}
+			} else { // Second bowl of frame
+				nextAction = Action.EndTurn;
+			}
+		}
+		
+		return nextAction;
+	}
+    */
 }

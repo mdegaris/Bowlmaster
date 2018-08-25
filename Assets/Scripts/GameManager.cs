@@ -12,9 +12,10 @@ public class GameManager : MonoBehaviour
 
     public Text pinsStanding;
 
-    private List<int> bowls = new List<int>();    
+    private List<int> rolls = new List<int>();    
     private PinSetter pinSetter;
     private Ball ball;
+    private ScoreDisplay scoreDisplay;
 
 
 
@@ -24,9 +25,24 @@ public class GameManager : MonoBehaviour
 
     public void Bowl(int pinFall)
     {
-        this.bowls.Add(pinFall);
-        ActionMaster.Action nextAction = ActionMaster.NextAction(this.bowls);
+        this.rolls.Add(pinFall);
+
+        ActionMaster.Action nextAction = ActionMaster.NextAction(this.rolls);
         this.pinSetter.DoAction(nextAction);
+
+
+        if (nextAction == ActionMaster.Action.EndGame)
+        {
+            Debug.Log("Game Over");
+            this.rolls = new List<int>();
+            this.scoreDisplay.Reset();
+        }
+        else
+        {
+            this.scoreDisplay.FillRolls(this.rolls);
+            this.scoreDisplay.FillFrames(ScoreMaster.ScoreCumulative(this.rolls));
+        }
+        
         this.ball.Reset();
     }
 
@@ -36,5 +52,6 @@ public class GameManager : MonoBehaviour
     {        
         this.pinSetter = GameObject.FindObjectOfType<PinSetter>();
         this.ball = GameObject.FindObjectOfType<Ball>();
+        this.scoreDisplay = GameObject.FindObjectOfType<ScoreDisplay>();
     }
 }

@@ -13,17 +13,20 @@ public class PinCounter : MonoBehaviour {
     private int lastStandingCount = -1;
     private int lastSettledPinCount = 10;
     private float lastChangedTime;
-    private Ball ball;
+
     // Indicates if the ball is rolling and is possibly going to hit pins.
     private bool ballOutOfPlay = false;
 
 
     // Reset the state of the pin counter.
-    public void Reset()
+    public void Reset(bool endTurn=false)
     {
-        this.lastStandingCount = -1;
-        this.lastSettledPinCount = 10;
         this.ballOutOfPlay = false;        
+
+        if (endTurn) { this.lastSettledPinCount = 10; }
+
+        this.lastStandingCount = -1;    // Only used to determine if pins have settled.
+        this.UpdatePinStanding(this.lastSettledPinCount, Color.green);
     }
 
 
@@ -44,10 +47,10 @@ public class PinCounter : MonoBehaviour {
     {              
         int currentStanding = this.CountStanding();
         int fallenCount = (this.lastSettledPinCount - currentStanding);
-        this.gameManager.Bowl(fallenCount);
+        
+        this.lastSettledPinCount = currentStanding;        
 
-        this.lastSettledPinCount = currentStanding;
-        this.UpdatePinStanding(currentStanding, Color.green);
+        this.gameManager.Bowl(fallenCount);
     }
 
 
@@ -58,9 +61,9 @@ public class PinCounter : MonoBehaviour {
     }
 
 
-    public void SetBallOutOfPlay(bool ballInPlay)
+    public void SetBallOutOfPlay(bool outOfPlay)
     {
-        this.ballOutOfPlay = ballInPlay;
+        this.ballOutOfPlay = outOfPlay;
     }
 
 
@@ -73,7 +76,6 @@ public class PinCounter : MonoBehaviour {
     private void Start()
     {
         this.gameManager = GameObject.FindObjectOfType<GameManager>();
-        this.ball = GameObject.FindObjectOfType<Ball>();
     }
 
 
@@ -105,7 +107,7 @@ public class PinCounter : MonoBehaviour {
         }
         else if ((currentTime - this.lastChangedTime) > PinCounter.settleTimeInSecs)
         {
-            this.lastSettledPinCount = currentStandingCount;
+            this.lastStandingCount = currentStandingCount;
             return true;
         }
 
